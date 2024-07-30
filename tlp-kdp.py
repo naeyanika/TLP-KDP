@@ -213,17 +213,17 @@ if uploaded_files:
                 else:
                     return 0
 
-            df4['TRANS. DATE'] = pd.to_datetime(df4['TRANS. DATE'], format='%d/%m/%Y').dt.strftime('%d%m%Y')
-            df4['DUMMY'] = df4['ID ANGGOTA'] + '' + df4['TRANS. DATE']
+            df4_merged['TRANS. DATE'] = pd.to_datetime(df4_merged['TRANS. DATE'], format='%d/%m/%Y').dt.strftime('%d%m%Y')
+            df4_merged['DUMMY'] = df4_merged['ID ANGGOTA'] + '' + df4_merged['TRANS. DATE']
 
-            pivot_table5 = pd.pivot_table(df4,
+            pivot_table5 = pd.pivot_table(df4_merged,
                                           values=['DEBIT', 'CREDIT'],
                                           index=['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE'],
                                           columns='JENIS PINJAMAN',
                                           aggfunc={'DEBIT': list, 'CREDIT': list},
                                           fill_value=0)
 
-            for col in pivot_table2.columns:
+            for col in pivot_table5.columns:
                 pivot_table5[col] = pivot_table5[col].apply(sum_lists)
 
             pivot_table5.columns = [f'{col[0]}_{col[1]}' for col in pivot_table5.columns]
