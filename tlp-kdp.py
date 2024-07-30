@@ -245,7 +245,47 @@ if uploaded_files:
         for col in new_columns:
             if col not in pivot_table4.columns:
                 pivot_table4[col] = 0
+            pivot_table4['DEBIT_TOTAL'] = pivot_table4.filter(like='DEBIT').sum(axis=1)
+            pivot_table4['CREDIT_TOTAL'] = pivot_table4.filter(like='CREDIT').sum(axis=1)
 
+        rename_dict = {
+                'KELOMPOK': 'KEL',
+                'DEBIT_PINJAMAN ARTA': 'Db PRT',
+                'DEBIT_PINJAMAN DT. PENDIDIKAN': 'Db DTP',
+                'DEBIT_PINJAMAN MIKROBISNIS': 'Db PMB',
+                'DEBIT_PINJAMAN SANITASI': 'Db PSA',
+                'DEBIT_PINJAMAN UMUM': 'Db PU',
+                'DEBIT_PINJAMAN RENOVASI RUMAH': 'Db PRR',
+                'DEBIT_PINJAMAN PERTANIAN': 'Db PTN',
+                'DEBIT_TOTAL': 'Db Total2',
+                'CREDIT_PINJAMAN ARTA': 'Cr PRT',
+                'CREDIT_PINJAMAN DT. PENDIDIKAN': 'Cr DTP',
+                'CREDIT_PINJAMAN MIKROBISNIS': 'Cr PMB',
+                'CREDIT_PINJAMAN SANITASI': 'Cr PSA',
+                'CREDIT_PINJAMAN UMUM': 'Cr PU',
+                'CREDIT_PINJAMAN RENOVASI RUMAH': 'Cr PRR',
+                'CREDIT_PINJAMAN PERTANIAN': 'Cr PTN',
+                'CREDIT_TOTAL': 'Cr Total2'
+        }
+            
+        pivot_table4 = pivot_table4.rename(columns=rename_dict)
+            
+        desired_order = [
+        'ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KEL', 'HARI', 'JAM', 'SL', 'TRANS. DATE',
+        'Db PTN', 'Cr PTN', 'Db PRT', 'Cr PRT', 'Db DTP', 'Cr DTP', 'Db PMB', 'Cr PMB', 'Db PRR', 'Cr PRR',
+        'Db PSA', 'Cr PSA', 'Db PU', 'Cr PU', 'Db Total2', 'Cr Total2'
+        ]
+
+            # Tambahkan kolom yang mungkin belum ada dalam DataFrame
+        for col in desired_order:
+            if col not in pivot_table4.columns:
+                pivot_table4[col] = 0
+
+        pivot_table4 = pivot_table4[desired_order]
+        
+        st.write("Pivot Table KDP:")
+        st.write(pivot_table4)
+        
         # Format currency columns
         for col in pivot_table4.columns:
             if col not in ['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE']:
