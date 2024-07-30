@@ -219,7 +219,7 @@ if uploaded_files:
             
         # Format currency columns
         for col in pivot_table2.columns:
-            if col not in ['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE']:
+            if col not in ['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KEL', 'HARI', 'JAM', 'SL', 'TRANS. DATE']:
                 pivot_table2[col] = pivot_table2[col].apply(lambda x: f'Rp {int(x):,}' if x != 0 else 0)
 
         st.write("Pivot Table TLP:")
@@ -285,7 +285,7 @@ if uploaded_files:
         
         # Format currency columns
         for col in pivot_table4.columns:
-            if col not in ['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE']:
+            if col not in ['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KEL', 'HARI', 'JAM', 'SL', 'TRANS. DATE']:
                 pivot_table4[col] = pivot_table4[col].apply(lambda x: f'Rp {int(x):,}' if x != 0 else 0)
 
         st.write("Pivot Table KDP:")
