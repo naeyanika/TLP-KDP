@@ -3,13 +3,6 @@ import pandas as pd
 import numpy as np
 import io
 
-# Define sum_list function
-def sum_list(item):
-    if isinstance(item, list):
-        return sum(item)
-    else:
-        return item
-
 st.title('Aplikasi Pengolahan TLP dan KDP')
 
 # Function to format numbers
@@ -40,6 +33,33 @@ def format_kelompok(kelompok):
     except (ValueError, TypeError):
         return str(kelompok)
 
+# Define sum_lists function
+def sum_lists(x):
+    if isinstance(x, list):
+        return sum(sum_list(item) for item in x)
+    elif isinstance(x, str):
+        try:
+            return int(x.replace('Rp ', '').replace(',', ''))
+        except ValueError:
+            return 0
+    elif isinstance(x, (int, float)):
+        return x
+    else:
+        return 0
+
+def sum_list(item):
+    if isinstance(item, list):
+        return sum(item)
+    elif isinstance(item, str):
+        try:
+            return int(item.replace('Rp ', '').replace(',', ''))
+        except ValueError:
+            return 0
+    elif isinstance(item, (int, float)):
+        return item
+    else:
+        return 0
+
 # File upload
 uploaded_files = st.file_uploader("Unggah file CSV", accept_multiple_files=True)
 
@@ -50,9 +70,7 @@ if uploaded_files:
         df = pd.read_csv(file, delimiter=';', low_memory=False)
         dfs[file.name] = df
 
-    #Informasi "df1 = dbpinjaman, df2=tlp, df2=kdp"
     # Process DbPinjaman
-
     if 'DbPinjaman.csv' in dfs:
         df1 = dfs['DbPinjaman.csv']
         df1.columns = df1.columns.str.strip()
@@ -88,7 +106,7 @@ if uploaded_files:
         
         df3['TRANS. DATE'] = pd.to_datetime(df3['TRANS. DATE'], format='%d/%m/%Y', errors='coerce')
         df3['ENTRY DATE'] = pd.to_datetime(df3['ENTRY DATE'], format='%d/%m/%Y', errors='coerce')
-    # Filter KAS/BANK
+        # Filter KAS/BANK
         df3_cleaned = df3.dropna(subset=['DESCRIPTION'])
         df4 = df3_cleaned[df3_cleaned['DESCRIPTION'].str.startswith('KAS/BANK')].copy()
         
@@ -100,182 +118,118 @@ if uploaded_files:
         st.write("KDP Setelah Filter:")
         st.write(df4)
 
-
-    
-
     if 'DbPinjaman.csv' in dfs:
-            # Merge untuk TLP
-            df2_merged = pd.merge(df2, df1[['DOCUMENT NO.', 'ID ANGGOTA', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'JENIS PINJAMAN']], on='DOCUMENT NO.', how='left')
+        # Merge untuk TLP
+        df2_merged = pd.merge(df2, df1[['DOCUMENT NO.', 'ID ANGGOTA', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'JENIS PINJAMAN']], on='DOCUMENT NO.', how='left')
 
-            rename_dict = {
-            'PINJAMAN MIKRO BISNIS': 'PINJAMAN MIKROBISNIS',
-            }
-            df2_merged['JENIS PINJAMAN'] = df2_merged['JENIS PINJAMAN'].replace(rename_dict)
+        rename_dict = {
+        'PINJAMAN MIKRO BISNIS': 'PINJAMAN MIKROBISNIS',
+        }
+        df2_merged['JENIS PINJAMAN'] = df2_merged['JENIS PINJAMAN'].replace(rename_dict)
 
-            # Merge untuk KDP
-            df4_merged = pd.merge(df4, df1[['DOCUMENT NO.', 'ID ANGGOTA', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'JENIS PINJAMAN']], on='DOCUMENT NO.', how='left')
+        # Merge untuk KDP
+        df4_merged = pd.merge(df4, df1[['DOCUMENT NO.', 'ID ANGGOTA', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'JENIS PINJAMAN']], on='DOCUMENT NO.', how='left')
 
-            rename_dict = {
-            'PINJAMAN MIKRO BISNIS': 'PINJAMAN MIKROBISNIS',
-            }
-            df4_merged['JENIS PINJAMAN'] = df4_merged['JENIS PINJAMAN'].replace(rename_dict)
+        df4_merged['JENIS PINJAMAN'] = df4_merged['JENIS PINJAMAN'].replace(rename_dict)
 
-            # Filter N/A untuk TLP
-            TLP_na = df2_merged[pd.isna(df2_merged['NAMA'])]
+        # Filter N/A untuk TLP
+        TLP_na = df2_merged[pd.isna(df2_merged['NAMA'])]
 
-            # Filter N/A untuk KDP
-            KDP_na = df4_merged[pd.isna(df4_merged['NAMA'])]
+        # Filter N/A untuk KDP
+        KDP_na = df4_merged[pd.isna(df4_merged['NAMA'])]
 
-            st.write("TLP:")
-            st.write(df2_merged)
-            
-            st.write("TLP N/A:")
-            st.write(TLP_na)
+        st.write("TLP:")
+        st.write(df2_merged)
+        
+        st.write("TLP N/A:")
+        st.write(TLP_na)
 
-            st.write("KDP:")
-            st.write(df4_merged)
-            
-            st.write("KDP N/A:")
-            st.write(KDP_na)
-    
-            # PIVOT TLP
-            def sum_lists(x):
-                if isinstance(x, list):
-                    return sum(sum_list(item) for item in x)
-                elif isinstance(x, str):
-                    try:
-                        return int(x.replace('Rp ','').replace(',', ''))
-                    except ValueError:
-                        return 0
-                elif isinstance(x, (int, float)):
-                    return x
-                else:
-                    return 0
+        st.write("KDP:")
+        st.write(df4_merged)
+        
+        st.write("KDP N/A:")
+        st.write(KDP_na)
 
-            df2_merged['TRANS. DATE'] = pd.to_datetime(df2_merged['TRANS. DATE'], format='%d/%m/%Y').dt.strftime('%d%m%Y')
-            df2_merged['DUMMY'] = df2_merged['ID ANGGOTA'] + '' + df2_merged['TRANS. DATE']
+        # PIVOT TLP
+        df2_merged['TRANS. DATE'] = pd.to_datetime(df2_merged['TRANS. DATE'], format='%d/%m/%Y').dt.strftime('%d%m%Y')
+        df2_merged['DUMMY'] = df2_merged['ID ANGGOTA'] + '' + df2_merged['TRANS. DATE']
 
-            pivot_table2 = pd.pivot_table(df2_merged,
-                                          values=['DEBIT', 'CREDIT'],
-                                          index=['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE'],
-                                          columns='JENIS PINJAMAN',
-                                          aggfunc={'DEBIT': list, 'CREDIT': list},
-                                          fill_value=0)
+        pivot_table2 = pd.pivot_table(df2_merged,
+                                      values=['DEBIT', 'CREDIT'],
+                                      index=['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE'],
+                                      columns='JENIS PINJAMAN',
+                                      aggfunc={'DEBIT': sum_lists, 'CREDIT': sum_lists},
+                                      fill_value=0)
 
-            for col in pivot_table2.columns:
-                pivot_table2[col] = pivot_table2[col].apply(sum_lists)
+        pivot_table2.columns = [f'{col[0]}_{col[1]}' for col in pivot_table2.columns]
+        pivot_table2.reset_index(inplace=True)
 
-            pivot_table2.columns = [f'{col[0]}_{col[1]}' for col in pivot_table2.columns]
-            pivot_table2.reset_index(inplace=True)
+        pivot_table2['TRANS. DATE'] = pd.to_datetime(pivot_table2['TRANS. DATE'], format='%d%m%Y').dt.strftime('%d/%m/%Y')
 
-            pivot_table2['TRANS. DATE'] = pd.to_datetime(pivot_table2['TRANS. DATE'], format='%d%m%Y').dt.strftime('%d/%m/%Y')
+        # Add missing columns
+        new_columns = [
+            'DEBIT_PINJAMAN UMUM', 'DEBIT_PINJAMAN RENOVASI RUMAH', 'DEBIT_PINJAMAN SANITASI',
+            'DEBIT_PINJAMAN ARTA', 'DEBIT_PINJAMAN MIKROBISNIS', 'DEBIT_PINJAMAN DT. PENDIDIKAN',
+            'DEBIT_PINJAMAN PERTANIAN', 'CREDIT_PINJAMAN UMUM', 'CREDIT_PINJAMAN RENOVASI RUMAH',
+            'CREDIT_PINJAMAN SANITASI', 'CREDIT_PINJAMAN ARTA', 'CREDIT_PINJAMAN MIKROBISNIS',
+            'CREDIT_PINJAMAN DT. PENDIDIKAN', 'CREDIT_PINJAMAN PERTANIAN'
+        ]
 
-            new_columns4 = [
-                'DEBIT_PINJAMAN UMUM',
-                'DEBIT_PINJAMAN RENOVASI RUMAH',
-                'DEBIT_PINJAMAN SANITASI',
-                'DEBIT_PINJAMAN ARTA',
-                'DEBIT_PINJAMAN MIKROBISNIS',
-                'DEBIT_PINJAMAN DT. PENDIDIKAN',
-                'DEBIT_PINJAMAN PERTANIAN',
-                'CREDIT_PINJAMAN UMUM',
-                'CREDIT_PINJAMAN RENOVASI RUMAH',
-                'CREDIT_PINJAMAN SANITASI',
-                'CREDIT_PINJAMAN ARTA',
-                'CREDIT_PINJAMAN MIKROBISNIS',
-                'CREDIT_PINJAMAN DT. PENDIDIKAN',
-                'CREDIT_PINJAMAN PERTANIAN'
-            ]
+        for col in new_columns:
+            if col not in pivot_table2.columns:
+                pivot_table2[col] = 0
 
-            for col in new_columns4:
-                if col not in pivot_table2.columns:
-                    pivot_table2[col] = 0
+        # Format currency columns
+        for col in pivot_table2.columns:
+            if col not in ['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE']:
+                pivot_table2[col] = pivot_table2[col].apply(lambda x: f'Rp {int(x):,}' if x != 0 else 0)
 
-            pivot_table4 = pivot_table2.copy()
-            for col in pivot_table4.columns:
-                if col not in ['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE']:
-                    pivot_table4[col] = pivot_table4[col].apply(lambda x: f'Rp {int(x):,}' if x != 0 else 0)
+        st.write("Pivot Table TLP:")
+        st.write(pivot_table2)
 
-            st.write("Pivot Table TLP:")
-            st.write(pivot_table4)
+        # PIVOT KDP
+        df4_merged['TRANS. DATE'] = pd.to_datetime(df4_merged['TRANS. DATE'], format='%d/%m/%Y').dt.strftime('%d%m%Y')
+        df4_merged['DUMMY'] = df4_merged['ID ANGGOTA'] + '' + df4_merged['TRANS. DATE']
 
-            # PIVOT KDP
-            def sum_lists(x):
-                if isinstance(x, list):
-                    return sum(sum_list(item) for item in x)
-                elif isinstance(x, str):
-                    try:
-                        return int(x.replace('Rp ','').replace(',', ''))
-                    except ValueError:
-                        return 0
-                elif isinstance(x, (int, float)):
-                    return x
-                else:
-                    return 0
+        pivot_table4 = pd.pivot_table(df4_merged,
+                                      values=['DEBIT', 'CREDIT'],
+                                      index=['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE'],
+                                      columns='JENIS PINJAMAN',
+                                      aggfunc={'DEBIT': sum_lists, 'CREDIT': sum_lists},
+                                      fill_value=0)
 
-            df4_merged['TRANS. DATE'] = pd.to_datetime(df4_merged['TRANS. DATE'], format='%d/%m/%Y').dt.strftime('%d%m%Y')
-            df4_merged['DUMMY'] = df4_merged['ID ANGGOTA'] + '' + df4_merged['TRANS. DATE']
+        pivot_table4.columns = [f'{col[0]}_{col[1]}' for col in pivot_table4.columns]
+        pivot_table4.reset_index(inplace=True)
 
-            pivot_table5 = pd.pivot_table(df4_merged,
-                                          values=['DEBIT', 'CREDIT'],
-                                          index=['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE'],
-                                          columns='JENIS PINJAMAN',
-                                          aggfunc={'DEBIT': list, 'CREDIT': list},
-                                          fill_value=0)
+        pivot_table4['TRANS. DATE'] = pd.to_datetime(pivot_table4['TRANS. DATE'], format='%d%m%Y').dt.strftime('%d/%m/%Y')
 
-            for col in pivot_table5.columns:
-                pivot_table5[col] = pivot_table5[col].apply(sum_lists)
+        # Add missing columns
+        for col in new_columns:
+            if col not in pivot_table4.columns:
+                pivot_table4[col] = 0
 
-            pivot_table5.columns = [f'{col[0]}_{col[1]}' for col in pivot_table5.columns]
-            pivot_table5.reset_index(inplace=True)
+        # Format currency columns
+        for col in pivot_table4.columns:
+            if col not in ['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE']:
+                pivot_table4[col] = pivot_table4[col].apply(lambda x: f'Rp {int(x):,}' if x != 0 else 0)
 
-            pivot_table5['TRANS. DATE'] = pd.to_datetime(pivot_table5['TRANS. DATE'], format='%d%m%Y').dt.strftime('%d/%m/%Y')
+        st.write("Pivot Table KDP:")
+        st.write(pivot_table4)
 
-            new_columns4 = [
-                'DEBIT_PINJAMAN UMUM',
-                'DEBIT_PINJAMAN RENOVASI RUMAH',
-                'DEBIT_PINJAMAN SANITASI',
-                'DEBIT_PINJAMAN ARTA',
-                'DEBIT_PINJAMAN MIKROBISNIS',
-                'DEBIT_PINJAMAN DT. PENDIDIKAN',
-                'DEBIT_PINJAMAN PERTANIAN',
-                'CREDIT_PINJAMAN UMUM',
-                'CREDIT_PINJAMAN RENOVASI RUMAH',
-                'CREDIT_PINJAMAN SANITASI',
-                'CREDIT_PINJAMAN ARTA',
-                'CREDIT_PINJAMAN MIKROBISNIS',
-                'CREDIT_PINJAMAN DT. PENDIDIKAN',
-                'CREDIT_PINJAMAN PERTANIAN'
-            ]
-
-            for col in new_columns4:
-                if col not in pivot_table5.columns:
-                    pivot_table5[col] = 0
-
-            pivot_table5 = pivot_table5.copy()
-            for col in pivot_table5.columns:
-                if col not in ['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE']:
-                    pivot_table4[col] = pivot_table5[col].apply(lambda x: f'Rp {int(x):,}' if x != 0 else 0)
-
-            st.write("Pivot Table KDP:")
-            st.write(pivot_table5)
-
-  
-  
-    # Download links for pivot tables
-    for name, df in {
-        'TLP.xlsx': pivot_table4,
-        'KDP.xlsx': pivot_table5,
-        'TLP_na.xlsx': TLP_na,
-        'KDP_na.xlsx': KDP_na
-    }.items():
-        buffer = io.BytesIO()
-        with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-            df.to_excel(writer, index=False, sheet_name='Sheet1')
-        buffer.seek(0)
-        st.download_button(
-            label=f"Unduh {name}",
-            data=buffer.getvalue(),
-            file_name=name,
-            mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        )
+        # Download links for pivot tables
+        for name, df in {
+            'TLP.xlsx': pivot_table2,
+            'KDP.xlsx': pivot_table4,
+            'TLP_na.xlsx': TLP_na,
+            'KDP_na.xlsx': KDP_na
+        }.items():
+            buffer = io.BytesIO()
+            with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+                df.to_excel(writer, index=False, sheet_name='Sheet1')
+            buffer.seek(0)
+            st.download_button(
+                label=f"Unduh {name}",
+                data=buffer.getvalue(),
+                file_name=name,
+                mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+            )
