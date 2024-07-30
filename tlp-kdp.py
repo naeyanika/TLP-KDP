@@ -251,7 +251,7 @@ if uploaded_files:
                                           fill_value=0)
 
             pivot_table4 = pivot_table4.applymap(sum_lists)
-            pivot_table4.columns = [f'{col[0]}_{col[1]}' for col in pivot_table3.columns]
+            pivot_table4.columns = [f'{col[0]}_{col[1]}' for col in pivot_table4.columns]
             pivot_table4.reset_index(inplace=True)
             pivot_table4['TRANS. DATE'] = pd.to_datetime(pivot_table4['TRANS. DATE'], format='%d%m%Y').dt.strftime('%d/%m/%Y')
 
