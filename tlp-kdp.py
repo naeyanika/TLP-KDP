@@ -155,13 +155,13 @@ if uploaded_files:
                                           aggfunc={'DEBIT': list, 'CREDIT': list},
                                           fill_value=0)
 
-for col in pivot_table2.columns:
-    pivot_table2[col] = pivot_table2[col].apply(sum_lists)
+            for col in pivot_table2.columns:
+                pivot_table2[col] = pivot_table2[col].apply(sum_lists)
 
-pivot_table2.columns = [f'{col[0]}_{col[1]}' for col in pivot_table2.columns]
-pivot_table2.reset_index(inplace=True)
+            pivot_table2.columns = [f'{col[0]}_{col[1]}' for col in pivot_table2.columns]
+            pivot_table2.reset_index(inplace=True)
 
-pivot_table2['TRANS. DATE'] = pd.to_datetime(pivot_table2['TRANS. DATE'], format='%d%m%Y').dt.strftime('%d/%m/%Y')
+            pivot_table2['TRANS. DATE'] = pd.to_datetime(pivot_table2['TRANS. DATE'], format='%d%m%Y').dt.strftime('%d/%m/%Y')
 
             new_columns4 = [
                 'DEBIT_PINJAMAN UMUM',
