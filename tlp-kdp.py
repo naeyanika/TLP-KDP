@@ -198,3 +198,84 @@ if uploaded_files:
 
             st.write("Pivot Table TLP:")
             st.write(pivot_table4)
+
+            # PIVOT KDP
+            def sum_lists(x):
+                if isinstance(x, list):
+                    return sum(sum_list(item) for item in x)
+                elif isinstance(x, str):
+                    try:
+                        return int(x.replace('Rp ','').replace(',', ''))
+                    except ValueError:
+                        return 0
+                elif isinstance(x, (int, float)):
+                    return x
+                else:
+                    return 0
+
+            df4['TRANS. DATE'] = pd.to_datetime(df4['TRANS. DATE'], format='%d/%m/%Y').dt.strftime('%d%m%Y')
+            df4['DUMMY'] = df4['ID ANGGOTA'] + '' + df4['TRANS. DATE']
+
+            pivot_table5 = pd.pivot_table(df4,
+                                          values=['DEBIT', 'CREDIT'],
+                                          index=['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE'],
+                                          columns='JENIS PINJAMAN',
+                                          aggfunc={'DEBIT': list, 'CREDIT': list},
+                                          fill_value=0)
+
+            for col in pivot_table2.columns:
+                pivot_table5[col] = pivot_table5[col].apply(sum_lists)
+
+            pivot_table5.columns = [f'{col[0]}_{col[1]}' for col in pivot_table5.columns]
+            pivot_table5.reset_index(inplace=True)
+
+            pivot_table5['TRANS. DATE'] = pd.to_datetime(pivot_table5['TRANS. DATE'], format='%d%m%Y').dt.strftime('%d/%m/%Y')
+
+            new_columns4 = [
+                'DEBIT_PINJAMAN UMUM',
+                'DEBIT_PINJAMAN RENOVASI RUMAH',
+                'DEBIT_PINJAMAN SANITASI',
+                'DEBIT_PINJAMAN ARTA',
+                'DEBIT_PINJAMAN MIKROBISNIS',
+                'DEBIT_PINJAMAN DT. PENDIDIKAN',
+                'DEBIT_PINJAMAN PERTANIAN',
+                'CREDIT_PINJAMAN UMUM',
+                'CREDIT_PINJAMAN RENOVASI RUMAH',
+                'CREDIT_PINJAMAN SANITASI',
+                'CREDIT_PINJAMAN ARTA',
+                'CREDIT_PINJAMAN MIKROBISNIS',
+                'CREDIT_PINJAMAN DT. PENDIDIKAN',
+                'CREDIT_PINJAMAN PERTANIAN'
+            ]
+
+            for col in new_columns4:
+                if col not in pivot_table5.columns:
+                    pivot_table5[col] = 0
+
+            pivot_table5 = pivot_table5.copy()
+            for col in pivot_table5.columns:
+                if col not in ['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE']:
+                    pivot_table4[col] = pivot_table5[col].apply(lambda x: f'Rp {int(x):,}' if x != 0 else 0)
+
+            st.write("Pivot Table KDP:")
+            st.write(pivot_table5)
+
+  
+  
+    # Download links for pivot tables
+    for name, df in {
+        'TLP.xlsx': pivot_table4,
+        'KDP.xlsx': pivot_table5,
+        'TLP_na.xlsx': TLP_na,
+        'KDP_na.xlsx': KDP_na
+    }.items():
+        buffer = io.BytesIO()
+        with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
+            df.to_excel(writer, index=False, sheet_name='Sheet1')
+        buffer.seek(0)
+        st.download_button(
+            label=f"Unduh {name}",
+            data=buffer.getvalue(),
+            file_name=name,
+            mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        )
