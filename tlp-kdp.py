@@ -134,8 +134,16 @@ if uploaded_files:
             # PIVOT TLP
             def sum_lists(x):
                 if isinstance(x, list):
-                    return sum(int(value.replace('Rp ', '').replace(',', '')) for value in x)
-                return x
+                    return sum(sum_list(item) for item in x)
+                elif isinstance(x, str):
+                    try:
+                        return int(x.replace('Rp ','').replace(',', ''))
+                    except ValueError:
+                        return 0
+                elif isinstance(x, (int, float)):
+                    return x
+                else:
+                    return 0
 
             df2_merged['TRANS. DATE'] = pd.to_datetime(df2_merged['TRANS. DATE'], format='%d/%m/%Y').dt.strftime('%d%m%Y')
             df2_merged['DUMMY'] = df2_merged['ID ANGGOTA'] + '' + df2_merged['TRANS. DATE']
@@ -218,9 +226,17 @@ if uploaded_files:
             # PIVOT KDP
             def sum_lists(x):
                 if isinstance(x, list):
-                    return sum(int(value.replace('Rp ', '').replace(',', '')) for value in x)
-                return x
-
+                    return sum(sum_list(item) for item in x)
+                elif isinstance(x, str):
+                    try:
+                        return int(x.replace('Rp ','').replace(',', ''))
+                    except ValueError:
+                        return 0
+                elif isinstance(x, (int, float)):
+                    return x
+                else:
+                    return 0
+                    
             df4_merged['TRANS. DATE'] = pd.to_datetime(df4_merged['TRANS. DATE'], format='%d/%m/%Y').dt.strftime('%d%m%Y')
             df4_merged['DUMMY'] = df4_merged['ID ANGGOTA'] + '' + df4_merged['TRANS. DATE']
 
