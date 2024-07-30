@@ -243,7 +243,7 @@ if uploaded_files:
             df4_merged['TRANS. DATE'] = pd.to_datetime(df4_merged['TRANS. DATE'], format='%d/%m/%Y').dt.strftime('%d%m%Y')
             df4_merged['DUMMY'] = df4_merged['ID ANGGOTA'] + '' + df4_merged['TRANS. DATE']
 
-            pivot_table4 = pd.pivot_table(df3_merged,
+            pivot_table4 = pd.pivot_table(df4_merged,
                                           values=['DEBIT', 'CREDIT'],
                                           index=['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE'],
                                           columns='JENIS PINJAMAN',
@@ -273,7 +273,7 @@ if uploaded_files:
             ]
 
             for col in new_columns4:
-                if col not in pivot_table2.columns:
+                if col not in pivot_table4.columns:
                     pivot_table4[col] = 0
 
             pivot_table4['DEBIT_TOTAL'] = pivot_table3.filter(like='DEBIT').sum(axis=1)
