@@ -3,6 +3,13 @@ import pandas as pd
 import numpy as np
 import io
 
+# Define sum_list function
+def sum_list(item):
+    if isinstance(item, list):
+        return sum(item)
+    else:
+        return item
+
 st.title('Aplikasi Pengolahan TLP dan KDP')
 
 # Function to format numbers
@@ -184,154 +191,10 @@ if uploaded_files:
                 if col not in pivot_table2.columns:
                     pivot_table2[col] = 0
 
-            pivot_table2['DEBIT_TOTAL'] = pivot_table2.filter(like='DEBIT').sum(axis=1)
-            pivot_table2['CREDIT_TOTAL'] = pivot_table2.filter(like='CREDIT').sum(axis=1)
+            pivot_table4 = pivot_table2.copy()
+            for col in pivot_table4.columns:
+                if col not in ['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE']:
+                    pivot_table4[col] = pivot_table4[col].apply(lambda x: f'Rp {int(x):,}' if x != 0 else 0)
 
-            rename_dict = {
-                'KELOMPOK': 'KEL',
-                'DEBIT_PINJAMAN ARTA': 'Db PRT',
-                'DEBIT_PINJAMAN DT. PENDIDIKAN': 'Db DTP',
-                'DEBIT_PINJAMAN MIKROBISNIS': 'Db PMB',
-                'DEBIT_PINJAMAN SANITASI': 'Db PSA',
-                'DEBIT_PINJAMAN UMUM': 'Db PU',
-                'DEBIT_PINJAMAN RENOVASI RUMAH': 'Db PRR',
-                'DEBIT_PINJAMAN PERTANIAN': 'Db PTN',
-                'DEBIT_TOTAL': 'Db Total2',
-                'CREDIT_PINJAMAN ARTA': 'Cr PRT',
-                'CREDIT_PINJAMAN DT. PENDIDIKAN': 'Cr DTP',
-                'CREDIT_PINJAMAN MIKROBISNIS': 'Cr PMB',
-                'CREDIT_PINJAMAN SANITASI': 'Cr PSA',
-                'CREDIT_PINJAMAN UMUM': 'Cr PU',
-                'CREDIT_PINJAMAN RENOVASI RUMAH': 'Cr PRR',
-                'CREDIT_PINJAMAN PERTANIAN': 'Cr PTN',
-                'CREDIT_TOTAL': 'Cr Total2'
-            }
-            
-            pivot_table2 = pivot_table2.rename(columns=rename_dict)
-            
-            desired_order = [
-            'ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KEL', 'HARI', 'JAM', 'SL', 'TRANS. DATE',
-            'Db PTN', 'Cr PTN', 'Db PRT', 'Cr PRT', 'Db DTP', 'Cr DTP', 'Db PMB', 'Cr PMB', 'Db PRR', 'Cr PRR',
-            'Db PSA', 'Cr PSA', 'Db PU', 'Cr PU', 'Db Total2', 'Cr Total2'
-            ]
-
-            # Tambahkan kolom yang mungkin belum ada dalam DataFrame
-            for col in desired_order:
-                if col not in pivot_table2.columns:
-                    pivot_table2[col] = 0
-
-            pivot_table2 = pivot_table2[desired_order]
-        
             st.write("Pivot Table TLP:")
-            st.write(pivot_table2)
-
-
-            # PIVOT KDP
-            def sum_lists(x):
-                if isinstance(x, list):
-                    return sum(sum_list(item) for item in x)
-                elif isinstance(x, str):
-                    try:
-                        return int(x.replace('Rp ','').replace(',', ''))
-                    except ValueError:
-                        return 0
-                elif isinstance(x, (int, float)):
-                    return x
-                else:
-                    return 0
-                    
-            df4_merged['TRANS. DATE'] = pd.to_datetime(df4_merged['TRANS. DATE'], format='%d/%m/%Y').dt.strftime('%d%m%Y')
-            df4_merged['DUMMY'] = df4_merged['ID ANGGOTA'] + '' + df4_merged['TRANS. DATE']
-
-            pivot_table4 = pd.pivot_table(df4_merged,
-                                          values=['DEBIT', 'CREDIT'],
-                                          index=['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE'],
-                                          columns='JENIS PINJAMAN',
-                                          aggfunc={'DEBIT': list, 'CREDIT': list},
-                                          fill_value=0)
-
-            pivot_table4 = pivot_table4.applymap(sum_lists)
-            pivot_table4.columns = [f'{col[0]}_{col[1]}' for col in pivot_table4.columns]
-            pivot_table4.reset_index(inplace=True)
-            pivot_table4['TRANS. DATE'] = pd.to_datetime(pivot_table4['TRANS. DATE'], format='%d%m%Y').dt.strftime('%d/%m/%Y')
-
-            new_columns4 = [
-                'DEBIT_PINJAMAN UMUM',
-                'DEBIT_PINJAMAN RENOVASI RUMAH',
-                'DEBIT_PINJAMAN SANITASI',
-                'DEBIT_PINJAMAN ARTA',
-                'DEBIT_PINJAMAN MIKROBISNIS',
-                'DEBIT_PINJAMAN DT. PENDIDIKAN',
-                'DEBIT_PINJAMAN PERTANIAN',
-                'CREDIT_PINJAMAN UMUM',
-                'CREDIT_PINJAMAN RENOVASI RUMAH',
-                'CREDIT_PINJAMAN SANITASI',
-                'CREDIT_PINJAMAN ARTA',
-                'CREDIT_PINJAMAN MIKROBISNIS',
-                'CREDIT_PINJAMAN DT. PENDIDIKAN',
-                'CREDIT_PINJAMAN PERTANIAN'
-            ]
-
-            for col in new_columns4:
-                if col not in pivot_table4.columns:
-                    pivot_table4[col] = 0
-
-            pivot_table4['DEBIT_TOTAL'] = pivot_table3.filter(like='DEBIT').sum(axis=1)
-            pivot_table4['CREDIT_TOTAL'] = pivot_table3.filter(like='CREDIT').sum(axis=1)
-
-            rename_dict = {
-                'KELOMPOK': 'KEL',
-                'DEBIT_PINJAMAN ARTA': 'Db PRT',
-                'DEBIT_PINJAMAN DT. PENDIDIKAN': 'Db DTP',
-                'DEBIT_PINJAMAN MIKROBISNIS': 'Db PMB',
-                'DEBIT_PINJAMAN SANITASI': 'Db PSA',
-                'DEBIT_PINJAMAN UMUM': 'Db PU',
-                'DEBIT_PINJAMAN RENOVASI RUMAH': 'Db PRR',
-                'DEBIT_PINJAMAN PERTANIAN': 'Db PTN',
-                'DEBIT_TOTAL': 'Db Total2',
-                'CREDIT_PINJAMAN ARTA': 'Cr PRT',
-                'CREDIT_PINJAMAN DT. PENDIDIKAN': 'Cr DTP',
-                'CREDIT_PINJAMAN MIKROBISNIS': 'Cr PMB',
-                'CREDIT_PINJAMAN SANITASI': 'Cr PSA',
-                'CREDIT_PINJAMAN UMUM': 'Cr PU',
-                'CREDIT_PINJAMAN RENOVASI RUMAH': 'Cr PRR',
-                'CREDIT_PINJAMAN PERTANIAN': 'Cr PTN',
-                'CREDIT_TOTAL': 'Cr Total2'
-            }
-            
-            pivot_table4 = pivot_table4.rename(columns=rename_dict)
-            
-            desired_order = [
-            'ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KEL', 'HARI', 'JAM', 'SL', 'TRANS. DATE',
-            'Db PTN', 'Cr PTN', 'Db PRT', 'Cr PRT', 'Db DTP', 'Cr DTP', 'Db PMB', 'Cr PMB', 'Db PRR', 'Cr PRR',
-            'Db PSA', 'Cr PSA', 'Db PU', 'Cr PU', 'Db Total2', 'Cr Total2'
-            ]
-
-            # Tambahkan kolom yang mungkin belum ada dalam DataFrame
-            for col in desired_order:
-                if col not in pivot_table4.columns:
-                    pivot_table4[col] = 0
-
-            pivot_table4 = pivot_table4[desired_order]
-        
-            st.write("Pivot Table KDP:")
             st.write(pivot_table4)
-    
-    
-    # Download links for pivot tables
-    for name, df in {
-        'TLP.xlsx': pivot_table2,
-        'KDP.xlsx': pivot_table4,
-        'TLP_na.xlsx': TLP_na,
-        'KDP_na.xlsx': KDP_na
-    }.items():
-        buffer = io.BytesIO()
-        with pd.ExcelWriter(buffer, engine='xlsxwriter') as writer:
-            df.to_excel(writer, index=False, sheet_name='Sheet1')
-        buffer.seek(0)
-        st.download_button(
-            label=f"Unduh {name}",
-            data=buffer.getvalue(),
-            file_name=name,
-            mime='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-        )
