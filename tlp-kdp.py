@@ -283,9 +283,6 @@ if uploaded_files:
 
         pivot_table4 = pivot_table4[desired_order]
         
-        st.write("Pivot Table KDP:")
-        st.write(pivot_table4)
-        
         # Format currency columns
         for col in pivot_table4.columns:
             if col not in ['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE']:
