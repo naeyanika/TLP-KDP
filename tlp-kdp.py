@@ -206,7 +206,7 @@ if uploaded_files:
         pivot_table4.columns = [f'{col[0]}_{col[1]}' for col in pivot_table4.columns]
         pivot_table4.reset_index(inplace=True)
         
-         pivot_table2['TRANS. DATE'] = pd.to_datetime(pivot_table2['TRANS. DATE'], format='%d%m%Y').dt.strftime('%d/%m/%Y')
+        pivot_table4['TRANS. DATE'] = pd.to_datetime(pivot_table4['TRANS. DATE'], format='%d%m%Y').dt.strftime('%d/%m/%Y')
 
         # Add missing columns
         for col in new_columns:
