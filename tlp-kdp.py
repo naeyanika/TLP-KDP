@@ -100,11 +100,7 @@ if uploaded_files:
         # Filter KAS/BANK
         df3_cleaned = df3.dropna(subset=['DESCRIPTION'])
         df4 = df3_cleaned[df3_cleaned['DESCRIPTION'].str.startswith('KAS/BANK')].copy()
-        
-        df4['TRANS. DATE'] = df4['TRANS. DATE'].apply(lambda x: x.strftime('%d/%m/%Y'))
-        df4['ENTRY DATE'] = df4['ENTRY DATE'].apply(lambda x: x.strftime('%d/%m/%Y'))
 
-        
         st.write("KDP Setelah Filter:")
         st.write(df4)
 
