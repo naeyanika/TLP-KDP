@@ -217,10 +217,6 @@ if uploaded_files:
 
         pivot_table2 = pivot_table2[desired_order]
             
-        # Format currency columns
-        for col in pivot_table2.columns:
-            if col not in ['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KEL', 'HARI', 'JAM', 'SL', 'TRANS. DATE']:
-                pivot_table2[col] = pivot_table2[col].apply(lambda x: f'Rp {int(x):,}' if x != 0 else 0)
 
         st.write("Pivot Table TLP:")
         st.write(pivot_table2)
