@@ -37,29 +37,20 @@ def format_kelompok(kelompok):
 def sum_lists(x):
     if isinstance(x, list):
         return sum(sum_list(item) for item in x)
-    elif isinstance(x, str):
-        try:
-            return int(x.replace('Rp ', '').replace(',', ''))
-        except ValueError:
-            return 0
-    elif isinstance(x, (int, float)):
-        return x
     else:
-        return 0
+        return sum_list(x)
 
 def sum_list(item):
-    if isinstance(item, list):
-        return sum(item)
+    if isinstance(item, (int, float)):
+        return item
     elif isinstance(item, str):
         try:
-            return int(item.replace('Rp ', '').replace(',', ''))
+            return float(item.replace('Rp ', '').replace(',', ''))
         except ValueError:
             return 0
-    elif isinstance(item, (int, float)):
-        return item
     else:
         return 0
-
+        
 # File upload
 uploaded_files = st.file_uploader("Unggah file CSV", accept_multiple_files=True)
 
@@ -112,8 +103,7 @@ if uploaded_files:
         
         df4['TRANS. DATE'] = df4['TRANS. DATE'].apply(lambda x: x.strftime('%d/%m/%Y'))
         df4['ENTRY DATE'] = df4['ENTRY DATE'].apply(lambda x: x.strftime('%d/%m/%Y'))
-        df4['DEBIT'] = df4['DEBIT'].apply(lambda x: f'Rp {float(x):,.0f}')
-        df4['CREDIT'] = df4['CREDIT'].apply(lambda x: f'Rp {float(x):,.0f}')
+
         
         st.write("KDP Setelah Filter:")
         st.write(df4)
@@ -151,15 +141,15 @@ if uploaded_files:
         st.write(KDP_na)
 
         # PIVOT TLP
-        df2_merged['TRANS. DATE'] = pd.to_datetime(df2_merged['TRANS. DATE'], format='%d/%m/%Y').dt.strftime('%d%m%Y')
-        df2_merged['DUMMY'] = df2_merged['ID ANGGOTA'] + '' + df2_merged['TRANS. DATE']
+        df2_merged['TRANS. DATE'] = pd.to_datetime(df2_merged['TRANS. DATE']).dt.strftime('%d%m%Y')
+        df2_merged['DUMMY'] = df2_merged['ID ANGGOTA'].astype(str) + df2_merged['TRANS. DATE'].astype(str)
 
         pivot_table2 = pd.pivot_table(df2_merged,
-                                      values=['DEBIT', 'CREDIT'],
-                                      index=['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE'],
-                                      columns='JENIS PINJAMAN',
-                                      aggfunc={'DEBIT': sum_lists, 'CREDIT': sum_lists},
-                                      fill_value=0)
+                              values=['DEBIT', 'CREDIT'],
+                              index=['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE'],
+                              columns='JENIS PINJAMAN',
+                              aggfunc={'DEBIT': sum_lists, 'CREDIT': sum_lists},
+                              fill_value=0)
 
         pivot_table2.columns = [f'{col[0]}_{col[1]}' for col in pivot_table2.columns]
         pivot_table2.reset_index(inplace=True)
@@ -222,20 +212,21 @@ if uploaded_files:
         st.write(pivot_table2)
 
         # PIVOT KDP
-        df4_merged['TRANS. DATE'] = pd.to_datetime(df4_merged['TRANS. DATE'], format='%d/%m/%Y').dt.strftime('%d%m%Y')
-        df4_merged['DUMMY'] = df4_merged['ID ANGGOTA'] + '' + df4_merged['TRANS. DATE']
+        df4_merged['TRANS. DATE'] = pd.to_datetime(df4_merged['TRANS. DATE']).dt.strftime('%d%m%Y')
+        df4_merged['DUMMY'] = df4_merged['ID ANGGOTA'].astype(str) + df4_merged['TRANS. DATE'].astype(str)
 
         pivot_table4 = pd.pivot_table(df4_merged,
-                                      values=['DEBIT', 'CREDIT'],
-                                      index=['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE'],
-                                      columns='JENIS PINJAMAN',
-                                      aggfunc={'DEBIT': sum_lists, 'CREDIT': sum_lists},
-                                      fill_value=0)
+                              values=['DEBIT', 'CREDIT'],
+                              index=['ID ANGGOTA', 'DUMMY', 'NAMA', 'CENTER', 'KELOMPOK', 'HARI', 'JAM', 'SL', 'TRANS. DATE'],
+                              columns='JENIS PINJAMAN',
+                              aggfunc={'DEBIT': sum_lists, 'CREDIT': sum_lists},
+                              fill_value=0)
 
         pivot_table4.columns = [f'{col[0]}_{col[1]}' for col in pivot_table4.columns]
         pivot_table4.reset_index(inplace=True)
 
         pivot_table4['TRANS. DATE'] = pd.to_datetime(pivot_table4['TRANS. DATE'], format='%d%m%Y').dt.strftime('%d/%m/%Y')
+
 
         # Add missing columns
         for col in new_columns:
