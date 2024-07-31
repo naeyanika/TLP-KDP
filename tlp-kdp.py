@@ -32,7 +32,10 @@ def format_kelompok(kelompok):
             return ''
     except (ValueError, TypeError):
         return str(kelompok)
-        
+# Function to sum lists
+def sum_lists(x):
+    return sum(x)
+    
 # File upload
 uploaded_files = st.file_uploader("Unggah file CSV", accept_multiple_files=True)
 
