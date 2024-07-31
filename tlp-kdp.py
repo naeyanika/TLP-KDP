@@ -32,24 +32,6 @@ def format_kelompok(kelompok):
             return ''
     except (ValueError, TypeError):
         return str(kelompok)
-
-# Define sum_lists function
-def sum_lists(x):
-    if isinstance(x, list):
-        return sum(sum_list(item) for item in x)
-    else:
-        return sum_list(x)
-
-def sum_list(item):
-    if isinstance(item, (int, float)):
-        return item
-    elif isinstance(item, str):
-        try:
-            return float(item.replace('Rp ', '').replace(',', ''))
-        except ValueError:
-            return 0
-    else:
-        return 0
         
 # File upload
 uploaded_files = st.file_uploader("Unggah file CSV", accept_multiple_files=True)
