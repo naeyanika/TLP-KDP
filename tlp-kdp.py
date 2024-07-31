@@ -211,7 +211,7 @@ if uploaded_files:
         st.write("Pivot Table TLP:")
         st.write(pivot_table2)
 
-        # PIVOT KDP
+        # PIVOT KDP 
         df4_merged['TRANS. DATE'] = pd.to_datetime(df4_merged['TRANS. DATE']).dt.strftime('%d%m%Y')
         df4_merged['DUMMY'] = df4_merged['ID ANGGOTA'].astype(str) + df4_merged['TRANS. DATE'].astype(str)
 
@@ -224,8 +224,6 @@ if uploaded_files:
 
         pivot_table4.columns = [f'{col[0]}_{col[1]}' for col in pivot_table4.columns]
         pivot_table4.reset_index(inplace=True)
-
-        pivot_table4['TRANS. DATE'] = pd.to_datetime(pivot_table4['TRANS. DATE'], format='%d%m%Y').dt.strftime('%d/%m/%Y')
 
 
         # Add missing columns
