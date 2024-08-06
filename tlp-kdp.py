@@ -153,7 +153,8 @@ if uploaded_files:
             if col not in pivot_table2.columns:
                 pivot_table2[col] = 0
 
-
+        pivot_table2['DEBIT_TOTAL'] = pivot_table2.filter(like='DEBIT').sum(axis=1)
+        pivot_table2['CREDIT_TOTAL'] = pivot_table2.filter(like='CREDIT').sum(axis=1)
 
         numeric_columns = [
         'DEBIT_PINJAMAN UMUM', 'DEBIT_PINJAMAN RENOVASI RUMAH', 'DEBIT_PINJAMAN SANITASI',
@@ -167,7 +168,6 @@ if uploaded_files:
             pivot_table2[col] = pd.to_numeric(pivot_table2[col], errors='coerce').fillna(0)
         
 
-        pivot_table2['DEBIT_TOTAL'] = pivot_table2[numeric_columns].sum(axis=1)
         pivot_table2['CREDIT_TOTAL'] = pivot_table2[numeric_columns].sum(axis=1)
 
         rename_dict = {
@@ -237,7 +237,10 @@ if uploaded_files:
         for col in new_columns:
             if col not in pivot_table4.columns:
                 pivot_table4[col] = 0
-
+            
+        pivot_table4['DEBIT_TOTAL'] = pivot_table4.filter(like='DEBIT').sum(axis=1)
+        pivot_table4['CREDIT_TOTAL'] = pivot_table4.filter(like='CREDIT').sum(axis=1)
+        
         numeric_columns = [
         'DEBIT_PINJAMAN UMUM', 'DEBIT_PINJAMAN RENOVASI RUMAH', 'DEBIT_PINJAMAN SANITASI',
         'DEBIT_PINJAMAN ARTA', 'DEBIT_PINJAMAN MIKROBISNIS', 'DEBIT_PINJAMAN DT. PENDIDIKAN',
