@@ -212,11 +212,20 @@ if uploaded_files:
         pivot_table4['TRANS. DATE'] = pd.to_datetime(pivot_table4['TRANS. DATE'], format='%d%m%Y').dt.strftime('%d/%m/%Y')
 
         # Add missing columns
+        new_columns = [
+            'DEBIT_PINJAMAN UMUM', 'DEBIT_PINJAMAN RENOVASI RUMAH', 'DEBIT_PINJAMAN SANITASI',
+            'DEBIT_PINJAMAN ARTA', 'DEBIT_PINJAMAN MIKROBISNIS', 'DEBIT_PINJAMAN DT. PENDIDIKAN',
+            'DEBIT_PINJAMAN PERTANIAN', 'CREDIT_PINJAMAN UMUM', 'CREDIT_PINJAMAN RENOVASI RUMAH',
+            'CREDIT_PINJAMAN SANITASI', 'CREDIT_PINJAMAN ARTA', 'CREDIT_PINJAMAN MIKROBISNIS',
+            'CREDIT_PINJAMAN DT. PENDIDIKAN', 'CREDIT_PINJAMAN PERTANIAN'
+        ]
+
         for col in new_columns:
             if col not in pivot_table4.columns:
                 pivot_table4[col] = 0
-            pivot_table4['DEBIT_TOTAL'] = pivot_table4.filter(like='DEBIT').sum(axis=1)
-            pivot_table4['CREDIT_TOTAL'] = pivot_table4.filter(like='CREDIT').sum(axis=1)
+
+        pivot_table4['DEBIT_TOTAL'] = pivot_table4.filter(like='DEBIT').sum(axis=1)
+        pivot_table4['CREDIT_TOTAL'] = pivot_table4.filter(like='CREDIT').sum(axis=1)
 
         rename_dict = {
                 'KELOMPOK': 'KEL',
