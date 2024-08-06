@@ -164,7 +164,7 @@ if uploaded_files:
         ]
 
         for col in numeric_columns:
-        pivot_table2[col] = pd.to_numeric(pivot_table2[col], errors='coerce').fillna(0)
+            pivot_table2[col] = pd.to_numeric(pivot_table2[col], errors='coerce').fillna(0)
         
 
         pivot_table2['CREDIT_TOTAL'] = pivot_table2[numeric_columns].sum(axis=1)
@@ -247,7 +247,7 @@ if uploaded_files:
         ]
 
         for col in numeric_columns:
-        pivot_table4[col] = pd.to_numeric(pivot_table4[col], errors='coerce').fillna(0)
+         pivot_table4[col] = pd.to_numeric(pivot_table4[col], errors='coerce').fillna(0)
         
         pivot_table4['CREDIT_TOTAL'] = pivot_table4[numeric_columns].sum(axis=1)
         pivot_table4['CREDIT_TOTAL'] = pivot_table4[numeric_columns].sum(axis=1)
