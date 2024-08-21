@@ -5,7 +5,7 @@ import io
 
 st.title('Aplikasi Pengolahan TLP dan KDP')
 st.divider()
-st.caption("red:[**Jika ada**] TAK_na.xlsx pada saat pengolahan TAK, masukkan data tersebut di dalam file TLP.csv")
+st.caption(":red[**Jika ada**] TAK_na.xlsx pada saat pengolahan TAK, masukkan data tersebut di dalam file TLP.csv")
 st.divider()
 st.subheader("File Yang Dibutuhkan:")
 st.write("1. TLP.csv")
