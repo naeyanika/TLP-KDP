@@ -4,6 +4,9 @@ import numpy as np
 import io
 
 st.title('Aplikasi Pengolahan TLP dan KDP')
+st.divider()
+st.caption("red:[**Jika ada**] TAK_na.xlsx pada saat pengolahan TAK, masukkan data tersebut di dalam file TLP.csv")
+st.divider()
 st.subheader("File Yang Dibutuhkan:")
 st.write("1. TLP.csv")
 st.write("2. KDP.csv")
@@ -14,9 +17,6 @@ st.write("""1. Format file harus bernama dan menggunakan ekstensi csv di excelny
 st.write("""2. File TLP dan KDP di rapikan header dan footer nya sperti pengolahan biasa, dan untuk kolom Debit dan Credit dibiarkan ada 2 dan jangan dihapus!.""")
 st.write("""3. File DbPinjaman, hapus header nya saja.""")
 
-st.divider()
-st.caption("red:[**Jika ada**] TAK_na.xlsx pada saat pengolahan TAK, masukkan data tersebut di dalam file TLP.csv")
-st.divider()
 # Function to format numbers
 def format_no(no):
     try:
