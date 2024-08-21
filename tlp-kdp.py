@@ -4,6 +4,12 @@ import numpy as np
 import io
 
 st.title('Aplikasi Pengolahan TLP dan KDP')
+st.subheader("File Yang Dibutuhkan:")
+st.write("1. TLP.csv")
+st.write("2. KDP.csv")
+st.write("3. DbPinjaman.csv")
+
+st.subheader("Cara Pengolahan:")
 st.write("""1. Format file harus bernama dan menggunakan ekstensi csv di excelnya pilih save as *CSV UTF-8 berbatas koma atau coma delimited*, sehingga seperti ini : TLP.csv, KDP.csv dan DbPinjaman.csv""")
 st.write("""2. File TLP dan KDP di rapikan header dan footer nya sperti pengolahan biasa, dan untuk kolom Debit dan Credit dibiarkan ada 2 dan jangan dihapus!.""")
 st.write("""3. File DbPinjaman, hapus header nya saja.""")
